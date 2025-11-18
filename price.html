@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水果定价盈亏计算器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e1e1e1;
+        }
+        th {
+            background-color: #f2f6fc;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        tr:hover {
+            background-color: #f5f9ff;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        .result-cell {
+            background-color: #e8f4fd;
+            font-weight: 600;
+            color: #2980b9;
+        }
+        .calculation-section {
+            background-color: #e8f6f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .calculation-section h3 {
+            color: #16a085;
+            margin-bottom: 10px;
+        }
+        .calculation-section p {
+            margin-bottom: 8px;
+        }
+        .instructions {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7d6608;
+        }
+        .instructions h3 {
+            color: #d4ac0d;
+            margin-bottom: 10px;
+        }
+        .instructions ul {
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 5px;
+        }
+        .summary {
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .summary h3 {
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #bdc3c7;
+        }
+        .summary-label {
+            font-weight: 600;
+        }
+        .profit {
+            color: #27ae60;
+        }
+        .loss {
+            color: #e74c3c;
+        }
+        .percentage-row {
+            background-color: #f0f8ff;
+        }
+        .total-margin {
+            background-color: #e1f5fe;
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .weight-input {
+            background-color: #f9f9f9;
+        }
+        .percentage-input {
+            background-color: #fff8e1;
+        }
+        .price-input {
+            background-color: #e8f6f3;
+        }
+        .btn-calculate {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+        }
+        .btn-calculate:hover {
+            background-color: #2980b9;
+        }
+        .percentage-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .percentage-item {
+            flex: 1;
+            margin: 0 5px;
+            text-align: center;
+        }
+        .percentage-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .percentage-total {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            background-color: #e1f5fe;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            th, td {
+                padding: 8px 10px;
+            }
+            .percentage-container {
+                flex-direction: column;
+            }
+            .percentage-item {
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>水果定价盈亏计算器</h1>
+        
+        <div class="section">
+            <div class="section-title">基础信息</div>
+            <table>
+                <tr>
+                    <th>项目</th>
+                    <th>数值</th>
+                    <th>单位</th>
+                </tr>
+                <tr>
+                    <td>总采购量（斤）</td>
+                    <td><input type="number" id="totalWeight" min="0" step="1" value="0">请输入斤数</td>
+                    <td>斤</td>
+                </tr>
+            </table>
+            
+            <div class="percentage-container">
+                <div class="percentage-item">
+                    <label for="percentageSmall">小果比例</label>
+                    <input type="number" id="percentageSmall" min="0" max="100" step="0.1" value="0" class="percentage-input"> %
+                </div>
+                <div class="percentage-item">
+                    <label for="percentageMedium">中果比例</label>
+                    <input type="number" id="percentageMedium" min="0" max="100" step="0.1" value="0" class="percentage-input"> %
+                </div>
+                <div class="percentage-item">
+                    <label for="percentageLarge">大果比例</label>
+                    <input type="number" id="percentageLarge" min="0" max="100" step="0.1" value="0" class="percentage-input"> %
+                </div>
+                <div class="percentage-item">
+                    <label for="percentageXLarge">特大果比例</label>
+                    <input type="number" id="percentageXLarge" min="0" max="100" step="0.1" value="0" class="percentage-input"> %
+                </div>
+            </div>
+            
+            <div class="percentage-total">
+                比例总和: <span id="percentageTotal">100.0</span> %
+            </div>
+            
+            <table>
+                <tr>
+                    <th>规格</th>
+                    <th>重量（斤）</th>
+                    <th>售价</th>
+                    <th>保利售价</th>
+                </tr>
+                <tr>
+                    <td>小果</td>
+                    <td><input type="number" id="weightSmall" min="0" step="1" value="0" class="weight-input" readonly></td>
+                    <td><input type="number" id="priceSmall" min="0" step="0.01" value="0" class="price-input"></td>
+                    <td id="targetPriceSmall" class="result-cell">0.00</td>
+                </tr>
+                <tr>
+                    <td>中果</td>
+                    <td><input type="number" id="weightMedium" min="0" step="1" value="0" class="weight-input" readonly></td>
+                    <td><input type="number" id="priceMedium" min="0" step="0.01" value="0" class="price-input"></td>
+                    <td id="targetPriceMedium" class="result-cell">0.00</td>
+                </tr>
+                <tr>
+                    <td>大果</td>
+                    <td><input type="number" id="weightLarge" min="0" step="1" value="0" class="weight-input" readonly></td>
+                    <td><input type="number" id="priceLarge" min="0" step="0.01" value="0" class="price-input"></td>
+                    <td id="targetPriceLarge" class="result-cell">0.00</td>
+                </tr>
+                <tr>
+                    <td>特大果</td>
+                    <td><input type="number" id="weightXLarge" min="0" step="1" value="0" class="weight-input" readonly></td>
+                    <td><input type="number" id="priceXLarge" min="0" step="0.01" value="0" class="price-input"></td>
+                    <td id="targetPriceXLarge" class="result-cell">0.00</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">成本与费率</div>
+            <table>
+                <tr>
+                    <th>项目</th>
+                    <th>数值</th>
+                    <th>单位/说明</th>
+                </tr>
+                <tr>
+                    <td>进货成本</td>
+                    <td><input type="number" id="costPrice" min="0" step="0.01" value="0"></td>
+                    <td>元/斤</td>
+                </tr>
+                <tr>
+                    <td>平台扣点和佣金率</td>
+                    <td><input type="number" id="commissionRate" min="0" max="100" step="0.1" value="22"></td>
+                    <td>% (例如输入22%，默认12%)</td>
+                </tr>
+                <tr>
+                    <td>剩余毛利率</td>
+                    <td><input type="number" id="targetMargin" min="0" max="100" step="0.1" value="13"></td>
+                    <td>% (例如输入10%。默认13%)</td>
+                </tr>
+            </table>
+            <div class="total-margin">
+                综合毛利率 = 平台扣点和佣金率 + 剩余毛利率 = <span id="totalMargin"></span>%
+            </div>
+        </div>
+        
+        <button class="btn-calculate" onclick="calculateAll()">计算保利售价</button>
+        
+        <div class="calculation-section">
+            <h3>计算过程</h3>
+            <p>销售额目标: <span id="salesTargetK">0</span> 元</p>
+        </div>
+        
+        <div class="summary">
+            <h3>盈亏汇总</h3>
+            <div class="summary-item">
+                <span class="summary-label">总成本:</span>
+                <span id="totalCost">0</span> 元
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">税前总收入:</span>
+                <span id="totalRevenueBeforeTax">0</span> 元
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">平台扣点+佣金:</span>
+                <span id="totalCommission">0</span> 元
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">扣点扣佣后收入:</span>
+                <span id="totalRevenueAfterTax">0</span> 元
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">盈亏:</span>
+                <span id="profitLoss">0</span> 元
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">整体毛利率:</span>
+                <span id="overallMargin">0</span> %
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ul>
+                <li>在"总采购量"中输入水果总重量</li>
+                <li>在"比例"行输入各规格水果的比例（百分比），系统会自动计算重量</li>
+                <li>在"售价"列输入已知规格的售价，留空一个要求解的规格</li>
+                <li>"保利售价"列会自动显示您要求解的规格的保利售价</li>
+                <li>修改"成本与费率"中的数值，计算结果会实时更新</li>
+                <li>盈亏汇总部分会显示整体经营状况</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 获取所有输入元素
+        const totalWeight = document.getElementById('totalWeight');
+        const weightSmall = document.getElementById('weightSmall');
+        const weightMedium = document.getElementById('weightMedium');
+        const weightLarge = document.getElementById('weightLarge');
+        const weightXLarge = document.getElementById('weightXLarge');
+        
+        const percentageSmall = document.getElementById('percentageSmall');
+        const percentageMedium = document.getElementById('percentageMedium');
+        const percentageLarge = document.getElementById('percentageLarge');
+        const percentageXLarge = document.getElementById('percentageXLarge');
+        const percentageTotal = document.getElementById('percentageTotal');
+        
+        const priceSmall = document.getElementById('priceSmall');
+        const priceMedium = document.getElementById('priceMedium');
+        const priceLarge = document.getElementById('priceLarge');
+        const priceXLarge = document.getElementById('priceXLarge');
+        
+        const costPrice = document.getElementById('costPrice');
+        const commissionRate = document.getElementById('commissionRate');
+        const targetMargin = document.getElementById('targetMargin');
+        const totalMargin = document.getElementById('totalMargin');
+        
+        // 获取所有结果元素
+        const targetPriceSmall = document.getElementById('targetPriceSmall');
+        const targetPriceMedium = document.getElementById('targetPriceMedium');
+        const targetPriceLarge = document.getElementById('targetPriceLarge');
+        const targetPriceXLarge = document.getElementById('targetPriceXLarge');
+        const salesTargetK = document.getElementById('salesTargetK');
+        
+        const totalCost = document.getElementById('totalCost');
+        const totalRevenueBeforeTax = document.getElementById('totalRevenueBeforeTax');
+        const totalCommission = document.getElementById('totalCommission');
+        const totalRevenueAfterTax = document.getElementById('totalRevenueAfterTax');
+        const profitLoss = document.getElementById('profitLoss');
+        const overallMargin = document.getElementById('overallMargin');
+        
+        // 添加事件监听器
+        const inputs = [
+            totalWeight,
+            percentageSmall, percentageMedium, percentageLarge, percentageXLarge,
+            priceSmall, priceMedium, priceLarge, priceXLarge,
+            costPrice, commissionRate, targetMargin
+        ];
+        
+        inputs.forEach(input => {
+            input.addEventListener('input', calculateAll);
+        });
+        
+        // 初始化计算
+        calculateAll();
+        
+        function calculateAll() {
+            // 获取输入值
+            const totalW = parseFloat(totalWeight.value) || 0;
+            
+            const pctSmall = parseFloat(percentageSmall.value) || 0;
+            const pctMedium = parseFloat(percentageMedium.value) || 0;
+            const pctLarge = parseFloat(percentageLarge.value) || 0;
+            const pctXLarge = parseFloat(percentageXLarge.value) || 0;
+            
+            const pSmall = parseFloat(priceSmall.value) || 0;
+            const pMedium = parseFloat(priceMedium.value) || 0;
+            const pLarge = parseFloat(priceLarge.value) || 0;
+            const pXLarge = parseFloat(priceXLarge.value) || 0;
+            
+            const cost = parseFloat(costPrice.value) || 0;
+            const commission = (parseFloat(commissionRate.value) || 0) / 100;
+            const margin = (parseFloat(targetMargin.value) || 0) / 100;
+            
+            // 计算总比例
+            const totalPercentage = pctSmall + pctMedium + pctLarge + pctXLarge;
+            percentageTotal.textContent = totalPercentage.toFixed(1);
+            
+            // 根据比例计算各规格重量
+            const wSmall = Math.round(totalW * pctSmall / 100);
+            const wMedium = Math.round(totalW * pctMedium / 100);
+            const wLarge = Math.round(totalW * pctLarge / 100);
+            const wXLarge = Math.round(totalW * pctXLarge / 100);
+            
+            // 更新重量输入框
+            weightSmall.value = wSmall;
+            weightMedium.value = wMedium;
+            weightLarge.value = wLarge;
+            weightXLarge.value = wXLarge;
+            
+            // 计算销售额目标K
+            const K = (totalW * cost) / (1 - commission - margin);
+            salesTargetK.textContent = K.toFixed(2);
+            
+            // 计算综合毛利率
+            const totalMarginValue = (commission + margin) * 100;
+            totalMargin.textContent = totalMarginValue.toFixed(1);
+            
+            // 计算各规格的保利售价
+            targetPriceSmall.textContent = ((K - wMedium * pMedium - wLarge * pLarge - wXLarge * pXLarge) / wSmall || 0).toFixed(2);
+            targetPriceMedium.textContent = ((K - wSmall * pSmall - wLarge * pLarge - wXLarge * pXLarge) / wMedium || 0).toFixed(2);
+            targetPriceLarge.textContent = ((K - wSmall * pSmall - wMedium * pMedium - wXLarge * pXLarge) / wLarge || 0).toFixed(2);
+            targetPriceXLarge.textContent = ((K - wSmall * pSmall - wMedium * pMedium - wLarge * pLarge) / wXLarge || 0).toFixed(2);
+            
+            // 计算盈亏汇总
+            const totalCostValue = totalW * cost;
+            totalCost.textContent = totalCostValue.toFixed(2);
+            
+            const revenueBeforeTax = wSmall * pSmall + wMedium * pMedium + wLarge * pLarge + wXLarge * pXLarge;
+            totalRevenueBeforeTax.textContent = revenueBeforeTax.toFixed(2);
+            
+            const commissionValue = revenueBeforeTax * commission;
+            totalCommission.textContent = commissionValue.toFixed(2);
+            
+            const revenueAfterTax = revenueBeforeTax - commissionValue;
+            totalRevenueAfterTax.textContent = revenueAfterTax.toFixed(2);
+            
+            const profitLossValue = revenueAfterTax - totalCostValue;
+            profitLoss.textContent = profitLossValue.toFixed(2);
+            
+            // 设置盈亏颜色
+            if (profitLossValue >= 0) {
+                profitLoss.className = 'profit';
+            } else {
+                profitLoss.className = 'loss';
+            }
+            
+            // 计算整体毛利率
+            const overallMarginValue = (profitLossValue / totalCostValue) * 100;
+            overallMargin.textContent = overallMarginValue.toFixed(2);
+            
+            // 设置毛利率颜色
+            if (overallMarginValue >= 0) {
+                overallMargin.className = 'profit';
+            } else {
+                overallMargin.className = 'loss';
+            }
+        }
+    </script>
+</body>
+</html>
