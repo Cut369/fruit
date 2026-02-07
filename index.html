@@ -440,7 +440,7 @@
                 </div>
 
                 <!-- 电子印章 -->
-                <img src="yinzhang.png" alt="电子印章" class="seal-image">
+                <img id="sealImage" src="yinzhang.png" alt="电子印章" class="seal-image">
             </div>
         </div>
     </div>
@@ -464,6 +464,31 @@
     </script>
     
     <script>
+        // 页面加载时转换印章图片为 base64
+        window.onload = function() {
+            const sealImg = document.getElementById('sealImage');
+            
+            // 检查图片是否已加载
+            if (sealImg.complete) {
+                convertToBase64(sealImg);
+            } else {
+                sealImg.onload = function() {
+                    convertToBase64(sealImg);
+                };
+            }
+        };
+
+        function convertToBase64(img) {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            const base64 = canvas.toDataURL('image/png');
+            img.src = base64;
+            console.log('印章图片已转换为 base64');
+        }
+
         function generateCertificate() {
             // 获取表单数据
             const productName = document.getElementById('productName').value;
@@ -519,7 +544,7 @@
             // 显示loading遮罩
             loadingOverlay.classList.add('active');
             
-            // 直接生成证书图片（本地图片不需要转换）
+            // 直接生成证书图片（图片已转换为 base64）
             generateCanvas(certificate);
         }
 
