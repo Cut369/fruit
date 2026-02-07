@@ -519,52 +519,8 @@
             // 显示loading遮罩
             loadingOverlay.classList.add('active');
             
-            // 获取印章图片
-            const sealImg = document.querySelector('.seal-image');
-            const originalSrc = sealImg.src;
-            
-            // 如果印章图片已经是base64，直接生成canvas
-            if (sealImg.src.startsWith('data:')) {
-                generateCanvas(certificate);
-                return;
-            }
-            
-            // 否则，将图片转换为base64
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.src = originalSrc;
-            
-            img.onload = function() {
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.naturalWidth;
-                    canvas.height = img.naturalHeight;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    
-                    // 替换印章图片的src为base64
-                    sealImg.src = canvas.toDataURL('image/png');
-                    
-                    // 生成证书图片
-                    generateCanvas(certificate);
-                } catch (error) {
-                    console.error('图片处理失败:', error);
-                    hideLoading();
-                    alert('印章图片处理失败，请重试');
-                }
-            };
-            
-            img.onerror = function() {
-                console.error('印章图片加载失败');
-                hideLoading();
-                alert('印章图片加载失败，请检查网络或重试');
-            };
-            
-            function hideLoading() {
-                loadingOverlay.classList.remove('active');
-                downloadBtn.disabled = false;
-                downloadBtn.textContent = '下载图片';
-            }
+            // 直接生成证书图片（本地图片不需要转换）
+            generateCanvas(certificate);
         }
 
         // 检测是否为移动设备
@@ -582,13 +538,7 @@
                     useCORS: true,
                     allowTaint: true,
                     logging: false,
-                    backgroundColor: '#ffffff',
-                    onclone: (clonedDoc) => {
-                        const clonedSeal = clonedDoc.querySelector('.seal-image');
-                        if (clonedSeal) {
-                            clonedSeal.crossOrigin = 'anonymous';
-                        }
-                    }
+                    backgroundColor: '#ffffff'
                 }).then(canvas => {
                     try {
                         const imageDataUrl = canvas.toDataURL('image/png');
