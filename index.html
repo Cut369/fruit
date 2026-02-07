@@ -76,16 +76,6 @@
             gap: 5px;
         }
         
-        .date-inputs {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .date-inputs input {
-            width: 80px;
-            text-align: center;
-        }
-        
         button {
             background-color: #4CAF50;
             color: white;
@@ -165,6 +155,23 @@
             text-align: center;
         }
         
+        .seal {
+            position: absolute;
+            bottom: 100px;
+            right: 50px;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: rotate(-15deg);
+        }
+        
+        .seal .star {
+            font-size: 40px;
+            margin: 5px 0;
+        }
+        
         .seal-image {
             position: absolute;
             top: 50%;
@@ -183,52 +190,50 @@
         .download-btn:hover {
             background-color: #0b7dda;
         }
+        
+        .download-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
 
-        /* 移动端适配 */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
+        /* Loading遮罩 */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
 
-            h1 {
-                font-size: 20px;
-                margin-bottom: 20px;
-            }
+        .loading-overlay.active {
+            display: flex;
+        }
 
-            .container {
-                flex-direction: column;
-                gap: 15px;
-            }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
 
-            .form-section {
-                width: 100%;
-            }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-            .preview-section {
-                width: 100%;
-                overflow-x: auto;
-            }
-
-            .checkbox-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .checkbox-item {
-                font-size: 14px;
-            }
-
-            button {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 10px;
-                padding: 12px 20px;
-                font-size: 14px;
-            }
-
-            .certificate {
-                margin: 0 auto 20px;
-            }
+        .loading-text {
+            color: white;
+            margin-top: 20px;
+            font-size: 18px;
+            font-family: Arial, sans-serif;
         }
 
         /* 图片预览模态框 */
@@ -292,50 +297,70 @@
             background-color: #da190b;
         }
 
-        /* 加载提示样式 */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+        /* 移动端适配 - 只调整网页布局，不改变证书效果 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .form-section {
+                width: 100%;
+            }
+
+            .preview-section {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            .checkbox-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .checkbox-item {
+                font-size: 14px;
+            }
+
+            button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .certificate {
+                margin: 0 auto 20px;
+            }
         }
 
-        .loading-overlay.active {
-            display: flex;
-        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 18px;
+            }
 
-        .loading-content {
-            background-color: white;
-            padding: 30px 50px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
+            button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
 
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4CAF50;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
+            .form-group label {
+                font-size: 14px;
+            }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: #333;
-            font-size: 16px;
+            .checkbox-item {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -415,46 +440,30 @@
                 </div>
 
                 <!-- 电子印章 -->
-                <img src="yinzhang.png" alt="电子印章" class="seal-image" id="sealImage">
+                <img src="yinzhang.png" alt="电子印章" class="seal-image">
             </div>
         </div>
-    </div>
-
-    <!-- 加载提示 -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">正在生成图片，请稍候...</div>
-        </div>
-    </div>
-    
-    <!-- 图片预览模态框 -->
-    <div class="image-modal" id="imageModal">
-        <img src="" alt="质量承诺合格证" class="image-modal-content" id="modalImage">
-        <div class="image-modal-text">长按图片保存到相册</div>
-        <button class="image-modal-btn image-modal-close" onclick="closeImageModal()">关闭</button>
     </div>
     
     <!-- 主CDN -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     
+    <!-- 备用CDN -->
     <script>
-        // 检测是否为移动设备
-        function isMobile() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (typeof html2canvas === 'undefined') {
+            var script = document.createElement('script');
+            script.src = 'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js';
+            script.onload = function() {
+                console.log('备用CDN加载成功');
+            };
+            script.onerror = function() {
+                console.error('所有CDN加载失败');
+            };
+            document.head.appendChild(script);
         }
-
-        // 显示加载提示
-        function showLoading() {
-            document.getElementById('loadingOverlay').classList.add('active');
-        }
-
-        // 隐藏加载提示
-        function hideLoading() {
-            document.getElementById('loadingOverlay').classList.remove('active');
-        }
-
-        // 生成证书（更新表单数据时调用）
+    </script>
+    
+    <script>
         function generateCertificate() {
             // 获取表单数据
             const productName = document.getElementById('productName').value;
@@ -492,10 +501,10 @@
             document.getElementById('downloadBtn').style.display = 'inline-block';
         }
         
-        // 下载证书图片
         function downloadCertificate() {
             const certificate = document.getElementById('certificatePreview');
             const downloadBtn = document.getElementById('downloadBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
             
             // 检查html2canvas是否加载
             if (typeof html2canvas === 'undefined') {
@@ -503,18 +512,69 @@
                 return;
             }
             
-            // 禁用按钮并显示加载提示
+            // 禁用按钮，防止重复点击
             downloadBtn.disabled = true;
             downloadBtn.textContent = '生成中...';
-            showLoading();
             
-            // 生成canvas
-            generateCanvas(certificate);
+            // 显示loading遮罩
+            loadingOverlay.classList.add('active');
+            
+            // 获取印章图片
+            const sealImg = document.querySelector('.seal-image');
+            const originalSrc = sealImg.src;
+            
+            // 如果印章图片已经是base64，直接生成canvas
+            if (sealImg.src.startsWith('data:')) {
+                generateCanvas(certificate);
+                return;
+            }
+            
+            // 否则，将图片转换为base64
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = originalSrc;
+            
+            img.onload = function() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth;
+                    canvas.height = img.naturalHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // 替换印章图片的src为base64
+                    sealImg.src = canvas.toDataURL('image/png');
+                    
+                    // 生成证书图片
+                    generateCanvas(certificate);
+                } catch (error) {
+                    console.error('图片处理失败:', error);
+                    hideLoading();
+                    alert('印章图片处理失败，请重试');
+                }
+            };
+            
+            img.onerror = function() {
+                console.error('印章图片加载失败');
+                hideLoading();
+                alert('印章图片加载失败，请检查网络或重试');
+            };
+            
+            function hideLoading() {
+                loadingOverlay.classList.remove('active');
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '下载图片';
+            }
         }
-        
-        // 生成canvas并处理
+
+        // 检测是否为移动设备
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
         function generateCanvas(certificate) {
             const downloadBtn = document.getElementById('downloadBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
             
             try {
                 html2canvas(certificate, {
@@ -533,8 +593,8 @@
                     try {
                         const imageDataUrl = canvas.toDataURL('image/png');
                         
-                        // 隐藏loading，恢复按钮状态
-                        hideLoading();
+                        // 隐藏loading
+                        loadingOverlay.classList.remove('active');
                         downloadBtn.disabled = false;
                         downloadBtn.textContent = '下载图片';
                         
@@ -546,28 +606,27 @@
                         }
                     } catch (error) {
                         console.error('图片生成失败:', error);
-                        hideLoading();
+                        loadingOverlay.classList.remove('active');
                         downloadBtn.disabled = false;
                         downloadBtn.textContent = '下载图片';
                         alert('图片生成失败，请重试');
                     }
                 }).catch(error => {
                     console.error('Canvas生成失败:', error);
-                    hideLoading();
+                    loadingOverlay.classList.remove('active');
                     downloadBtn.disabled = false;
                     downloadBtn.textContent = '下载图片';
                     alert('图片生成失败，请重试');
                 });
             } catch (error) {
                 console.error('下载函数执行失败:', error);
-                hideLoading();
+                loadingOverlay.classList.remove('active');
                 downloadBtn.disabled = false;
                 downloadBtn.textContent = '下载图片';
                 alert('下载功能异常，请刷新页面重试');
             }
         }
-        
-        // 电脑端下载图片
+
         function downloadImage(imageDataUrl) {
             try {
                 const link = document.createElement('a');
@@ -583,8 +642,7 @@
                 alert('下载失败，请检查浏览器设置');
             }
         }
-        
-        // 显示图片预览（移动端）
+
         function showImagePreview(imageDataUrl) {
             const modal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
@@ -592,30 +650,24 @@
             modalImage.src = imageDataUrl;
             modal.classList.add('active');
         }
-        
-        // 关闭图片预览
+
         function closeImageModal() {
             const modal = document.getElementById('imageModal');
             modal.classList.remove('active');
         }
-        
-        // 页面加载时检查印章图片
-        window.addEventListener('load', function() {
-            const sealImg = document.getElementById('sealImage');
-            const originalSrc = sealImg.src;
-            
-            // 检查图片是否存在，如果不存在使用备用图片
-            sealImg.onerror = function() {
-                console.warn('本地印章图片未找到，使用备用图片');
-                sealImg.src = 'https://coze-coding-project.tos.coze.site/create_attachment/2026-02-05/2197293873496412_8ae88227f4eb527545bcc69e35bc7e8d_%E7%94%B5%E5%AD%90%E5%8D%B0%E7%AB%A0.png?sign=4892345508-95d2933235-0-a2fb06cb8b082e20760b12babed5c3944dab0b02c7acaa34cd4fc4493462c064';
-                sealImg.crossOrigin = 'anonymous';
-            };
-            
-            // 检查本地图片是否加载成功
-            sealImg.onload = function() {
-                console.log('本地印章图片加载成功');
-            };
-        });
     </script>
+
+    <!-- Loading遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">正在生成图片，请稍候...</div>
+    </div>
+
+    <!-- 图片预览模态框 -->
+    <div class="image-modal" id="imageModal">
+        <img src="" alt="质量承诺合格证" class="image-modal-content" id="modalImage">
+        <div class="image-modal-text">长按图片保存到相册</div>
+        <button class="image-modal-btn image-modal-close" onclick="closeImageModal()">关闭</button>
+    </div>
 </body>
 </html>
