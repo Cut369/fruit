@@ -1,6 +1,7 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
+<head><script src="https://lf-cdn.coze.cn/obj/unpkg/coze-webapp/console-bridge/0.0.1-alpha.b2eb33/dist/index.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>质量承诺合格证生成器</title>
@@ -433,6 +434,9 @@
     </script>
     
     <script>
+        // 缓存印章的 base64 数据
+        let sealBase64 = null;
+
         // 显示加载提示
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'flex';
@@ -443,7 +447,45 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
-        // 检查印章图片是否存在
+        // 预加载印章图片为 base64（关键优化）
+        async function preloadSealImage() {
+            const sealImg = document.getElementById('sealImage');
+            if (!sealImg) return;
+
+            try {
+                // 使用 Image 对象加载图片
+                const img = new Image();
+                
+                return new Promise((resolve, reject) => {
+                    img.onload = function() {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.naturalWidth;
+                            canvas.height = img.naturalHeight;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0);
+                            sealBase64 = canvas.toDataURL('image/png');
+                            console.log('✅ 印章图片预加载完成');
+                            resolve();
+                        } catch (error) {
+                            console.error('图片转换失败:', error);
+                            reject(error);
+                        }
+                    };
+                    
+                    img.onerror = function() {
+                        console.error('❌ 印章图片加载失败');
+                        reject(new Error('印章图片加载失败，请确保将 yinzhang.png 文件放在同一目录下'));
+                    };
+                    
+                    img.src = sealImg.src;
+                });
+            } catch (error) {
+                console.error('印章图片预加载失败:', error);
+            }
+        }
+
+        // 检查印章图片是否存在（保留用于实时检查）
         function checkSealImage() {
             return new Promise((resolve, reject) => {
                 const img = document.getElementById('sealImage');
@@ -504,14 +546,9 @@
             
             // 显示下载按钮
             document.getElementById('downloadBtn').style.display = 'inline-block';
-            
-            // 检查印章图片
-            checkSealImage().catch(error => {
-                console.warn('印章图片检查:', error.message);
-            });
         }
         
-        // 下载证书图片（优化版）
+        // 下载证书图片（高性能优化版）
         async function downloadCertificate() {
             const certificate = document.getElementById('certificatePreview');
             const sealImg = document.getElementById('sealImage');
@@ -526,15 +563,59 @@
             showLoading();
             
             try {
-                // 先检查印章图片是否可用
-                await checkSealImage();
+                // 使用预加载的 base64 图片（大幅提升速度）
+                const originalSrc = sealImg.src;
                 
-                // 生成证书图片
+                if (sealBase64) {
+                    // 使用缓存的 base64，避免重新加载
+                    console.log('🚀 使用缓存的印章图片');
+                    sealImg.src = sealBase64;
+                } else {
+                    // 如果没有预加载，实时转换
+                    console.log('⏳ 实时转换印章图片...');
+                    try {
+                        const img = new Image();
+                        await new Promise((resolve, reject) => {
+                            img.onload = function() {
+                                try {
+                                    const canvas = document.createElement('canvas');
+                                    canvas.width = img.naturalWidth;
+                                    canvas.height = img.naturalHeight;
+                                    const ctx = canvas.getContext('2d');
+                                    ctx.drawImage(img, 0, 0);
+                                    sealBase64 = canvas.toDataURL('image/png');
+                                    sealImg.src = sealBase64;
+                                    resolve();
+                                } catch (error) {
+                                    reject(error);
+                                }
+                            };
+                            img.onerror = function() {
+                                reject(new Error('印章图片加载失败'));
+                            };
+                            img.src = originalSrc;
+                        });
+                    } catch (error) {
+                        hideLoading();
+                        alert('印章图片加载失败，请确保 yinzhang.png 文件在同一目录下');
+                        return;
+                    }
+                }
+                
+                // 生成证书图片（优化配置）
                 const canvas = await html2canvas(certificate, {
                     scale: 2,
-                    useCORS: false, // 本地图片不需要CORS
+                    useCORS: false,
+                    allowTaint: true,
                     backgroundColor: '#ffffff',
-                    logging: false // 关闭日志减少错误
+                    logging: false,
+                    onclone: function(clonedDoc) {
+                        // 确保克隆的文档中使用 base64 图片
+                        const clonedSealImg = clonedDoc.getElementById('sealImage');
+                        if (clonedSealImg && sealBase64) {
+                            clonedSealImg.src = sealBase64;
+                        }
+                    }
                 });
                 
                 // 下载图片
@@ -546,34 +627,31 @@
                 link.click();
                 document.body.removeChild(link);
                 
+                // 恢复原始图片源
+                sealImg.src = originalSrc;
+                
                 // 隐藏加载提示
                 hideLoading();
                 
                 // 显示成功提示
                 setTimeout(() => {
-                    alert('图片下载成功！');
+                    alert('✅ 图片下载成功！');
                 }, 100);
                 
             } catch (error) {
-                console.error('下载失败:', error);
+                console.error('❌ 下载失败:', error);
                 hideLoading();
-                
-                if (error.message.includes('印章图片加载失败')) {
-                    alert(error.message + '\n\n请点击上方的链接下载印章图片，并确保文件名为 yinzhang.png');
-                } else {
-                    alert('图片生成失败，请重试或检查浏览器控制台查看详细错误');
-                }
+                alert('图片生成失败，请重试或检查浏览器控制台');
             }
         }
         
-        // 页面加载时检查印章图片
+        // 页面加载时预加载印章图片（关键优化）
         window.addEventListener('load', function() {
-            // 延迟检查，确保DOM完全加载
-            setTimeout(() => {
-                checkSealImage().catch(error => {
-                    console.warn('页面加载时检查印章图片:', error.message);
-                });
-            }, 500);
+            // 立即开始预加载，不延迟
+            console.log('📦 开始预加载印章图片...');
+            preloadSealImage().catch(error => {
+                console.warn('⚠️ 印章图片预加载失败，下载时会重新加载:', error.message);
+            });
         });
     </script>
 </body>
