@@ -165,23 +165,6 @@
             text-align: center;
         }
         
-        .seal {
-            position: absolute;
-            bottom: 100px;
-            right: 50px;
-            width: 150px;
-            height: 150px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform: rotate(-15deg);
-        }
-        
-        .seal .star {
-            font-size: 40px;
-            margin: 5px 0;
-        }
-        
         .seal-image {
             position: absolute;
             top: 50%;
@@ -248,23 +231,65 @@
             }
         }
 
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 18px;
-            }
+        /* 图片预览模态框 */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
 
-            button {
-                padding: 10px 16px;
-                font-size: 13px;
-            }
+        .image-modal.active {
+            display: flex;
+        }
 
-            .form-group label {
-                font-size: 14px;
-            }
+        .image-modal-content {
+            max-width: 100%;
+            max-height: 80vh;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
 
-            .checkbox-item {
-                font-size: 13px;
-            }
+        .image-modal-text {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .image-modal-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .image-modal-btn:hover {
+            background-color: #45a049;
+        }
+
+        .image-modal-close {
+            background-color: #f44336;
+        }
+
+        .image-modal-close:hover {
+            background-color: #da190b;
         }
 
         /* 加载提示样式 */
@@ -279,6 +304,10 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
+        }
+
+        .loading-overlay.active {
+            display: flex;
         }
 
         .loading-content {
@@ -307,62 +336,6 @@
         .loading-text {
             color: #333;
             font-size: 16px;
-        }
-
-        /* 图片预览弹窗样式 */
-        .image-preview-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-
-        .image-preview-content {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 95%;
-            max-height: 90%;
-            overflow: auto;
-            text-align: center;
-        }
-
-        .image-preview-content img {
-            max-width: 100%;
-            max-height: 70vh;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-
-        .image-preview-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .image-preview-buttons button {
-            min-width: 120px;
-        }
-
-        .save-tip {
-            background-color: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 15px;
-            color: #856404;
-            font-size: 14px;
-        }
-
-        .save-tip p {
-            margin: 5px 0;
         }
     </style>
 </head>
@@ -441,25 +414,10 @@
                     </div>
                 </div>
 
-                <!-- 电子印章 - 只使用本地图片 -->
+                <!-- 电子印章 -->
                 <img src="yinzhang.png" alt="电子印章" class="seal-image" id="sealImage">
             </div>
         </div>
-    </div>
-
-    <!-- 本地使用提示 -->
-    <div id="localTip" style="max-width: 1200px; margin: 20px auto; padding: 15px; background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; color: #856404;">
-        <strong>💡 使用说明：</strong> 
-        <ol style="margin-top: 10px; margin-left: 20px;">
-            <li>请确保将 <strong>yinzhang.png</strong> 文件下载到与 HTML 文件相同的目录下</li>
-            <li>填写表单后，点击"生成合格证"预览效果</li>
-            <li>确认无误后，点击"下载图片"保存合格证</li>
-        </ol>
-        <br>
-        <a href="https://coze-coding-project.tos.coze.site/create_attachment/2026-02-05/2197293873496412_8ae88227f4eb527545bcc69e35bc7e8d_%E7%94%B5%E5%AD%90%E5%8D%B0%E7%AB%A0.png?sign=4892345508-95d2933235-0-a2fb06cb8b082e20760b12babed5c3944dab0b02c7acaa34cd4fc4493462c064" 
-           target="_blank" 
-           style="color: #0066cc; text-decoration: underline;"
-           download="yinzhang.png">点击下载印章图片 (yinzhang.png)</a>
     </div>
 
     <!-- 加载提示 -->
@@ -469,109 +427,31 @@
             <div class="loading-text">正在生成图片，请稍候...</div>
         </div>
     </div>
-
-    <!-- 图片预览弹窗 -->
-    <div id="imagePreviewOverlay" class="image-preview-overlay">
-        <div class="image-preview-content">
-            <div class="save-tip" id="saveTip">
-                <p><strong>📱 保存说明：</strong></p>
-                <p>1. 长按图片 → 选择"保存图片"</p>
-                <p>2. 或点击下方"保存到相册"按钮</p>
-            </div>
-            <img id="previewImage" src="" alt="合格证预览">
-            <div class="image-preview-buttons">
-                <button onclick="saveToAlbum()">保存到相册</button>
-                <button onclick="closeImagePreview()" style="background-color: #6c757d;">关闭</button>
-            </div>
-        </div>
+    
+    <!-- 图片预览模态框 -->
+    <div class="image-modal" id="imageModal">
+        <img src="" alt="质量承诺合格证" class="image-modal-content" id="modalImage">
+        <div class="image-modal-text">长按图片保存到相册</div>
+        <button class="image-modal-btn image-modal-close" onclick="closeImageModal()">关闭</button>
     </div>
     
     <!-- 主CDN -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     
-    <!-- 备用CDN -->
-    <script>
-        if (typeof html2canvas === 'undefined') {
-            var script = document.createElement('script');
-            script.src = 'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js';
-            script.onload = function() {
-                console.log('备用CDN加载成功');
-            };
-            script.onerror = function() {
-                console.error('所有CDN加载失败');
-            };
-            document.head.appendChild(script);
-        }
-    </script>
-    
     <script>
         // 检测是否为移动设备
-        function isMobileDevice() {
+        function isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
 
         // 显示加载提示
         function showLoading() {
-            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('loadingOverlay').classList.add('active');
         }
 
         // 隐藏加载提示
         function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-
-        // 显示图片预览
-        function showImagePreview(imageUrl) {
-            document.getElementById('previewImage').src = imageUrl;
-            document.getElementById('imagePreviewOverlay').style.display = 'flex';
-            
-            // 如果是PC设备，隐藏保存提示
-            if (!isMobileDevice()) {
-                document.getElementById('saveTip').style.display = 'none';
-            }
-        }
-
-        // 关闭图片预览
-        function closeImagePreview() {
-            document.getElementById('imagePreviewOverlay').style.display = 'none';
-        }
-
-        // 保存到相册
-        function saveToAlbum() {
-            const imageUrl = document.getElementById('previewImage').src;
-            const link = document.createElement('a');
-            link.href = imageUrl;
-            link.download = '质量承诺合格证.png';
-            link.click();
-            setTimeout(() => {
-                alert('图片已开始下载，请检查您的相册或下载文件夹');
-                closeImagePreview();
-            }, 500);
-        }
-
-        // 检查印章图片是否存在
-        function checkSealImage() {
-            return new Promise((resolve, reject) => {
-                const img = document.getElementById('sealImage');
-                // 如果图片已经加载完成
-                if (img.complete && img.naturalWidth > 0) {
-                    resolve(true);
-                    return;
-                }
-                
-                // 如果图片加载失败
-                img.onerror = function() {
-                    reject(new Error('印章图片加载失败，请确保将 yinzhang.png 文件放在同一目录下'));
-                };
-                
-                // 图片加载成功
-                img.onload = function() {
-                    resolve(true);
-                };
-                
-                // 触发图片重新加载（确保事件监听器已设置）
-                img.src = img.src;
-            });
+            document.getElementById('loadingOverlay').classList.remove('active');
         }
 
         // 生成证书（更新表单数据时调用）
@@ -610,17 +490,12 @@
             
             // 显示下载按钮
             document.getElementById('downloadBtn').style.display = 'inline-block';
-            
-            // 检查印章图片
-            checkSealImage().catch(error => {
-                console.warn('印章图片检查:', error.message);
-            });
         }
         
-        // 下载证书图片（优化版）
-        async function downloadCertificate() {
+        // 下载证书图片
+        function downloadCertificate() {
             const certificate = document.getElementById('certificatePreview');
-            const sealImg = document.getElementById('sealImage');
+            const downloadBtn = document.getElementById('downloadBtn');
             
             // 检查html2canvas是否加载
             if (typeof html2canvas === 'undefined') {
@@ -628,66 +503,118 @@
                 return;
             }
             
-            // 显示加载提示
+            // 禁用按钮并显示加载提示
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = '生成中...';
             showLoading();
             
+            // 生成canvas
+            generateCanvas(certificate);
+        }
+        
+        // 生成canvas并处理
+        function generateCanvas(certificate) {
+            const downloadBtn = document.getElementById('downloadBtn');
+            
             try {
-                // 先检查印章图片是否可用
-                await checkSealImage();
-                
-                // 生成证书图片
-                const canvas = await html2canvas(certificate, {
-                    scale: isMobileDevice() ? 1.5 : 2, // 移动端降低清晰度提高速度
-                    useCORS: false, // 本地图片不需要CORS
+                html2canvas(certificate, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
                     backgroundColor: '#ffffff',
-                    logging: false // 关闭日志减少错误
+                    onclone: (clonedDoc) => {
+                        const clonedSeal = clonedDoc.querySelector('.seal-image');
+                        if (clonedSeal) {
+                            clonedSeal.crossOrigin = 'anonymous';
+                        }
+                    }
+                }).then(canvas => {
+                    try {
+                        const imageDataUrl = canvas.toDataURL('image/png');
+                        
+                        // 隐藏loading，恢复按钮状态
+                        hideLoading();
+                        downloadBtn.disabled = false;
+                        downloadBtn.textContent = '下载图片';
+                        
+                        // 移动端显示预览，电脑端自动下载
+                        if (isMobile()) {
+                            showImagePreview(imageDataUrl);
+                        } else {
+                            downloadImage(imageDataUrl);
+                        }
+                    } catch (error) {
+                        console.error('图片生成失败:', error);
+                        hideLoading();
+                        downloadBtn.disabled = false;
+                        downloadBtn.textContent = '下载图片';
+                        alert('图片生成失败，请重试');
+                    }
+                }).catch(error => {
+                    console.error('Canvas生成失败:', error);
+                    hideLoading();
+                    downloadBtn.disabled = false;
+                    downloadBtn.textContent = '下载图片';
+                    alert('图片生成失败，请重试');
                 });
-                
-                // 获取图片数据
-                const imageUrl = canvas.toDataURL('image/png');
-                
-                // 隐藏加载提示
+            } catch (error) {
+                console.error('下载函数执行失败:', error);
                 hideLoading();
-                
-                // 根据设备类型处理图片
-                if (isMobileDevice()) {
-                    // 移动端：显示图片预览，让用户手动保存
-                    showImagePreview(imageUrl);
-                } else {
-                    // PC端：直接下载
-                    const link = document.createElement('a');
-                    link.download = '质量承诺合格证.png';
-                    link.href = imageUrl;
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    setTimeout(() => {
-                        alert('图片下载成功！');
-                    }, 100);
-                }
-                
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '下载图片';
+                alert('下载功能异常，请刷新页面重试');
+            }
+        }
+        
+        // 电脑端下载图片
+        function downloadImage(imageDataUrl) {
+            try {
+                const link = document.createElement('a');
+                link.download = '质量承诺合格证.png';
+                link.href = imageDataUrl;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert('图片下载成功！');
             } catch (error) {
                 console.error('下载失败:', error);
-                hideLoading();
-                
-                if (error.message.includes('印章图片加载失败')) {
-                    alert(error.message + '\n\n请点击上方的链接下载印章图片，并确保文件名为 yinzhang.png');
-                } else {
-                    alert('图片生成失败，请重试或检查浏览器控制台查看详细错误');
-                }
+                alert('下载失败，请检查浏览器设置');
             }
+        }
+        
+        // 显示图片预览（移动端）
+        function showImagePreview(imageDataUrl) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            
+            modalImage.src = imageDataUrl;
+            modal.classList.add('active');
+        }
+        
+        // 关闭图片预览
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
         }
         
         // 页面加载时检查印章图片
         window.addEventListener('load', function() {
-            // 延迟检查，确保DOM完全加载
-            setTimeout(() => {
-                checkSealImage().catch(error => {
-                    console.warn('页面加载时检查印章图片:', error.message);
-                });
-            }, 500);
+            const sealImg = document.getElementById('sealImage');
+            const originalSrc = sealImg.src;
+            
+            // 检查图片是否存在，如果不存在使用备用图片
+            sealImg.onerror = function() {
+                console.warn('本地印章图片未找到，使用备用图片');
+                sealImg.src = 'https://coze-coding-project.tos.coze.site/create_attachment/2026-02-05/2197293873496412_8ae88227f4eb527545bcc69e35bc7e8d_%E7%94%B5%E5%AD%90%E5%8D%B0%E7%AB%A0.png?sign=4892345508-95d2933235-0-a2fb06cb8b082e20760b12babed5c3944dab0b02c7acaa34cd4fc4493462c064';
+                sealImg.crossOrigin = 'anonymous';
+            };
+            
+            // 检查本地图片是否加载成功
+            sealImg.onload = function() {
+                console.log('本地印章图片加载成功');
+            };
         });
     </script>
 </body>
