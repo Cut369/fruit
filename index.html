@@ -387,13 +387,12 @@
                     </div>
                 </div>
 
-                <!-- 电子印章 - 直接使用远程图片 -->
+                <!-- 电子印章 - 使用base64编码的内嵌图片，确保可以显示 -->
                 <img 
-                    src="https://coze-coding-project.tos.coze.site/create_attachment/2026-02-05/2197293873496412_8ae88227f4eb527545bcc69e35bc7e8d_%E7%94%B5%E5%AD%90%E5%8D%B0%E7%AB%A0.png?sign=4892345508-95d2933235-0-a2fb06cb8b082e20760b12babed5c3944dab0b02c7acaa34cd4fc4493462c064"
+                    src="data:image/png;base64,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"
                     alt="电子印章" 
                     class="seal-image"
                     id="sealImage"
-                    crossorigin="anonymous"
                 >
             </div>
         </div>
@@ -459,7 +458,7 @@
             document.getElementById('downloadBtn').style.display = 'inline-block';
         }
         
-        // 下载证书图片（简化版，直接使用远程图片）
+        // 下载证书图片（简化版）
         async function downloadCertificate() {
             const certificate = document.getElementById('certificatePreview');
             
@@ -473,19 +472,9 @@
             showLoading();
             
             try {
-                // 确保印章图片已加载
-                const sealImg = document.getElementById('sealImage');
-                if (!sealImg.complete) {
-                    await new Promise((resolve, reject) => {
-                        sealImg.onload = resolve;
-                        sealImg.onerror = reject;
-                    });
-                }
-                
                 // 生成证书图片
                 const canvas = await html2canvas(certificate, {
                     scale: 1.5, // 降低清晰度提高速度
-                    useCORS: true, // 允许跨域图片
                     backgroundColor: '#ffffff',
                     logging: false // 关闭日志提高性能
                 });
@@ -510,24 +499,9 @@
             } catch (error) {
                 console.error('下载失败:', error);
                 hideLoading();
-                alert('图片生成失败，请检查网络连接或刷新页面重试');
+                alert('图片生成失败，请重试');
             }
         }
-        
-        // 页面加载时预加载印章图片
-        window.addEventListener('load', function() {
-            // 预加载印章图片
-            const sealImg = document.getElementById('sealImage');
-            
-            // 检查图片是否加载成功
-            sealImg.onerror = function() {
-                console.error('印章图片加载失败，请检查网络连接');
-            };
-            
-            sealImg.onload = function() {
-                console.log('印章图片加载成功');
-            };
-        });
     </script>
 </body>
 </html>
